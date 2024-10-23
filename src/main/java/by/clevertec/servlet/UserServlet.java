@@ -114,4 +114,33 @@ public class UserServlet extends HttpServlet {
         }
         out.flush();
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        String pathInfo = req.getPathInfo();
+        if (pathInfo.equals("/delete")) {
+            String idParam = req.getParameter("id");
+            if (idParam != null) {
+                try {
+                    Long id = Long.parseLong(idParam);
+                    userService.delete(id);
+                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                } catch (NumberFormatException e) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print("{\"error\": \"Invalid user ID\"}");
+                }
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print("{\"error\": \"Missing user ID\"}");
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            out.print("{\"error\": \"Invalid path for DELETE\"}");
+        }
+        out.flush();
+    }
 }
