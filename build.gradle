@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'by.clevertec'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+war {
+    archiveFileName = 'clevertec-task-servlet.war'
+}
+
+jar {
+    archiveFileName = 'clevertec-task-servlet.jar'
+}
+
+test {
+    useJUnitPlatform()
+}
