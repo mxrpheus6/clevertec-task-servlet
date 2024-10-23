@@ -14,25 +14,27 @@ public class UserRepository {
     private static long idCounter = 1;
 
     static {
-        users.put(idCounter++, 
+        users.put(idCounter,
                 User.builder()
-                        .id(idCounter)
+                        .id(1L)
                         .username("Steve")
                         .email("steve@gmail.com")
                         .password("qwerty1234")
                         .registeredAt(LocalDate.now())
                         .build()
         );
+        idCounter++;
 
-        users.put(idCounter++,
+        users.put(idCounter,
                 User.builder()
-                        .id(idCounter)
+                        .id(2L)
                         .username("Tim")
                         .email("tim@gmail.com")
                         .password("qwerty4321")
                         .registeredAt(LocalDate.now())
                         .build()
         );
+        idCounter++;
     }
 
     public List<User> findAll() {
@@ -47,6 +49,7 @@ public class UserRepository {
 
     public User save(User user) {
         user.setId(idCounter++);
+        user.setRegisteredAt(LocalDate.now());
         users.put(user.getId(), user);
         return user;
     }
