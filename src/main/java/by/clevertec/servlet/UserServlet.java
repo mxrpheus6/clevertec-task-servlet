@@ -75,7 +75,43 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             out.print("{\"error\": \"Invalid path for POST\"}");
         }
+        out.flush();
+    }
 
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        String pathInfo = req.getPathInfo();
+        if (pathInfo.equals("/update")) {
+            String idParam = req.getParameter("id");
+            if (idParam != null) {
+                try {
+                    Long id = Long.parseLong(idParam);
+                    User user = objectMapper.readValue(req.getInputStream(), User.class);
+                    user.setId(id);
+                    User updatedUser = userService.update(user);
+                    if (updatedUser != null) {
+                        String json = objectMapper.writeValueAsString(updatedUser);
+                        out.print(json);
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        out.print("{\"error\": \"User not found\"}");
+                    }
+                } catch (Exception e) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print("{\"error\": \"Invalid user data\"}");
+                }
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print("{\"error\": \"Missing user ID\"}");
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            out.print("{\"error\": \"Invalid path for PUT\"}");
+        }
         out.flush();
     }
 }
