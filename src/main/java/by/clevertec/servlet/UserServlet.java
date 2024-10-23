@@ -25,12 +25,11 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
+        String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
-            // Сериализация списка пользователей в JSON
             List<User> users = userService.findAll();
             String json = objectMapper.writeValueAsString(users);
             out.print(json);
@@ -40,7 +39,6 @@ public class UserServlet extends HttpServlet {
                 Long id = Long.parseLong(idParam);
                 User user = userService.findById(id);
                 if (user != null) {
-                    // Сериализация объекта пользователя в JSON
                     String json = objectMapper.writeValueAsString(user);
                     out.print(json);
                 } else {
@@ -52,6 +50,32 @@ public class UserServlet extends HttpServlet {
                 out.print("{\"error\": \"Missing user ID\"}");
             }
         }
+        out.flush();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        String pathInfo = req.getPathInfo();
+        if (pathInfo.equals("/create")) {
+            try {
+                User user = objectMapper.readValue(req.getInputStream(), User.class);
+                User createdUser = userService.create(user);
+                String json = objectMapper.writeValueAsString(createdUser);
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+                out.print(json);
+            } catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print("{\"error\": \"Invalid user data\"}");
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            out.print("{\"error\": \"Invalid path for POST\"}");
+        }
+
         out.flush();
     }
 }
