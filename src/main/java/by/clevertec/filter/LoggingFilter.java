@@ -27,11 +27,13 @@ public class LoggingFilter implements Filter {
         String requestURL = httpRequest.getRequestURL().toString();
         String clientIP = request.getRemoteAddr();
         String userAgent = httpRequest.getHeader("User-Agent");
+        String queryString = httpRequest.getQueryString();
         Date requestTime = new Date();
 
         logger.info("Request received: ");
         logger.info("  Method: " + method);
         logger.info("  URL: " + requestURL);
+        logger.info("  Query: " + (queryString == null ? "N/A" : queryString));
         logger.info("  Client IP: " + clientIP);
         logger.info("  User-Agent: " + userAgent);
         logger.info("  Time: " + requestTime);
